@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ElectroWallet PWA</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./styles.css" />
+  <meta name="theme-color" content="#0a0a12" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+      });
+    }
+  </script>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div>
+        <h1>ElectroWallet</h1>
+        <p class="muted">PWA ledger client (local or remote).</p>
+      </div>
+      <button id="refresh" class="ghost">Refresh</button>
+    </header>
+
+    <section class="card">
+      <div class="row space">
+        <div>
+          <div class="label">Address</div>
+          <div class="mono" id="address">—</div>
+        </div>
+        <button id="copyAddress" class="ghost">Copy</button>
+      </div>
+      <div class="row">
+        <div class="label">Mode</div>
+        <select id="mode">
+          <option value="local">Local ledger</option>
+          <option value="remote">Remote ledger</option>
+        </select>
+      </div>
+      <div class="row" id="remoteRow" hidden>
+        <input id="remoteUrl" placeholder="https://your-ledger-host:3000" autocomplete="off" />
+        <button id="saveRemote" class="ghost">Set</button>
+      </div>
+    </section>
+
+    <section class="card stats">
+      <div>
+        <div class="label">Balance (sats)</div>
+        <div class="big" id="balance">0</div>
+      </div>
+      <div>
+        <div class="label">Transactions</div>
+        <div class="big" id="txCount">0</div>
+      </div>
+    </section>
+
+    <section class="card grid">
+      <div>
+        <h3>Add funds (faucet)</h3>
+        <form id="addForm">
+          <input name="amount" type="number" min="1" value="100000" />
+          <button type="submit">Credit</button>
+        </form>
+      </div>
+      <div>
+        <h3>Send</h3>
+        <form id="sendForm">
+          <input name="to" placeholder="Recipient address" required />
+          <input name="amount" type="number" min="1" placeholder="Amount sats" required />
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row space">
+        <h3>Activity</h3>
+        <span id="status" class="muted"></span>
+      </div>
+      <div id="txList" class="tx-list"></div>
+    </section>
+  </div>
+
+  <template id="txTemplate">
+    <div class="tx">
+      <div class="row space">
+        <div>
+          <div class="label type"></div>
+          <div class="mono id"></div>
+        </div>
+        <div class="amount"></div>
+      </div>
+      <div class="row meta">
+        <span class="to"></span>
+        <span class="time"></span>
+      </div>
+    </div>
+  </template>
+
+  <script src="./app.js"></script>
+</body>
+</html>

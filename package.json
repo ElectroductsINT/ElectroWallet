@@ -1,0 +1,12 @@
+{
+  "name": "ledger-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "ledger-server.js",
+  "scripts": {
+    "start": "node ledger-server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

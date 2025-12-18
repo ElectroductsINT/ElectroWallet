@@ -1,0 +1,15 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+		7A1000001 = {isa = PBXGroup; children = (7A1000002, 7A1000003, 7A1000004, 7A1000005); path = ElectroWallet; sourceTree = "<group>"; };
+		7A1000002 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectroWalletApp.swift; sourceTree = "<group>"; };
+		7A1000003 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7A1000004 = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7A1000005 = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+	};
+	rootObject = 7A1000000;
+}
