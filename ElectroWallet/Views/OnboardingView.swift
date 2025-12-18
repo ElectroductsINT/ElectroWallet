@@ -118,8 +118,11 @@ struct OnboardingView: View {
     
     private func createWallet() async {
         await handle(action: {
-            let phrase = try await walletManager.createWallet()
-            createdMnemonic = phrase
+            let wallet = try await walletManager.createWallet()
+            // Retrieve the mnemonic from keychain to show to user
+            if let mnemonic = try KeychainService.shared.getMnemonic(for: wallet.address) {
+                createdMnemonic = mnemonic
+            }
         })
     }
     
