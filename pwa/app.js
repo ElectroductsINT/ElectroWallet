@@ -128,7 +128,10 @@ function renderLedger(ledger) {
   els.txCount.textContent = mapped.length;
   els.txList.innerHTML = '';
   if (mapped.length === 0) {
-    els.txList.innerHTML = '<div class="muted" style="text-align: center; padding: 20px;">No transactions yet. Add test funds to get started!</div>';
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'muted empty-state';
+    emptyDiv.textContent = 'No transactions yet. Add test funds to get started!';
+    els.txList.appendChild(emptyDiv);
   }
   mapped.forEach(tx => {
     const clone = els.txTemplate.content.cloneNode(true);
@@ -172,10 +175,13 @@ function addLocalTx(tx) {
   persistLedger();
 }
 
+const MIN_FEE = 100;
+const FEE_RATE = 1000;
+
 function buildTx({ from, to, amount, fee = null, confirmed = false }) {
   const id = randomHex(64);
   const now = Math.floor(Date.now() / 1000);
-  const calcFee = fee !== null ? fee : Math.max(100, Math.floor(amount / 1000));
+  const calcFee = fee !== null ? fee : Math.max(MIN_FEE, Math.floor(amount / FEE_RATE));
   return { id, from, to, amount: Number(amount), fee: calcFee, timestamp: now, confirmed };
 }
 
@@ -195,7 +201,7 @@ async function handleSend(to, amount) {
   }
   
   const balance = computeBalance(currentLedger, state.wallet.address);
-  const fee = Math.max(100, Math.floor(numAmount / 1000));
+  const fee = Math.max(MIN_FEE, Math.floor(numAmount / FEE_RATE));
   if (numAmount + fee > balance) {
     throw new Error(`Insufficient balance. You need ${(numAmount + fee).toLocaleString()} sats (including ${fee} sats fee), but only have ${balance.toLocaleString()} sats`);
   }

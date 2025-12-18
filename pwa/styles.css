@@ -64,6 +64,10 @@ form { display: flex; flex-direction: column; gap: 8px; }
 .tx .amount.positive { color: #7ed957; }
 .tx .amount.negative { color: #ff9a9a; }
 .tx .meta { font-size: 13px; color: #9ba3b5; justify-content: space-between; }
+.empty-state {
+  text-align: center;
+  padding: 20px;
+}
 .copied-feedback {
   position: fixed;
   top: 20px;

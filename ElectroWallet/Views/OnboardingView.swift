@@ -123,8 +123,6 @@ struct OnboardingView: View {
             do {
                 if let mnemonic = try KeychainService.shared.getMnemonic(for: wallet.address) {
                     createdMnemonic = mnemonic
-                } else {
-                    throw WalletError.keychainError
                 }
             } catch {
                 // If we can't retrieve mnemonic, still proceed but log the issue
