@@ -120,8 +120,16 @@ struct OnboardingView: View {
         await handle(action: {
             let wallet = try await walletManager.createWallet()
             // Retrieve the mnemonic from keychain to show to user
-            if let mnemonic = try KeychainService.shared.getMnemonic(for: wallet.address) {
-                createdMnemonic = mnemonic
+            do {
+                if let mnemonic = try KeychainService.shared.getMnemonic(for: wallet.address) {
+                    createdMnemonic = mnemonic
+                } else {
+                    throw WalletError.keychainError
+                }
+            } catch {
+                // If we can't retrieve mnemonic, still proceed but log the issue
+                print("Warning: Could not retrieve mnemonic from keychain: \(error)")
+                // Wallet is still created successfully, just can't show backup phrase
             }
         })
     }

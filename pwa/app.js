@@ -182,19 +182,28 @@ function buildTx({ from, to, amount, fee = null, confirmed = false }) {
 async function handleSend(to, amount) {
   if (!to || !amount || amount <= 0) throw new Error('Please enter a valid recipient address and amount');
   const numAmount = Number(amount);
-  const balance = computeBalance(
-    state.mode === 'local' ? state.localLedger : [], 
-    state.wallet.address
-  );
+  
+  // Get current ledger for balance check
+  let currentLedger = state.localLedger;
+  if (state.mode === 'remote') {
+    if (!state.remoteUrl) throw new Error('Please enter and connect to a remote server URL first');
+    try {
+      currentLedger = await fetchRemoteLedger();
+    } catch {
+      throw new Error('Cannot fetch balance from remote server. Please check your connection.');
+    }
+  }
+  
+  const balance = computeBalance(currentLedger, state.wallet.address);
   const fee = Math.max(100, Math.floor(numAmount / 1000));
   if (numAmount + fee > balance) {
     throw new Error(`Insufficient balance. You need ${(numAmount + fee).toLocaleString()} sats (including ${fee} sats fee), but only have ${balance.toLocaleString()} sats`);
   }
+  
   const tx = buildTx({ from: state.wallet.address, to, amount: numAmount, confirmed: false });
   if (state.mode === 'local') {
     addLocalTx(tx);
   } else {
-    if (!state.remoteUrl) throw new Error('Please enter and connect to a remote server URL first');
     await postRemoteTx(tx);
   }
   await refresh();
