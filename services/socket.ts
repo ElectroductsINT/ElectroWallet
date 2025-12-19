@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { INITIAL_MARKET } from '../constants';
 
 export type MarketSnapshot = {
   btc: { price: number; change: number };
@@ -24,6 +25,8 @@ class ElectroSocket {
   private socket: Socket | null = null;
   private mockMode: boolean = true; // Enable mock mode for demo without backend
   private listeners: Map<string, Set<Function>> = new Map();
+  private market = JSON.parse(JSON.stringify(INITIAL_MARKET));
+  private marketTimer: any = null;
 
   connect(username?: string) {
     if (this.socket) return this.socket;
@@ -38,6 +41,7 @@ class ElectroSocket {
     // Detect if server is not available and enable mock mode
     this.socket.on('connect_error', () => {
       this.mockMode = true;
+      this.startMockMarketLoop();
     });
 
     this.socket.on('connect', () => {
@@ -47,9 +51,50 @@ class ElectroSocket {
     // Listen for localStorage changes from other tabs
     if (this.mockMode) {
       window.addEventListener('storage', this.handleStorageChange.bind(this));
+      this.startMockMarketLoop();
     }
 
     return this.socket;
+  }
+
+  private startMockMarketLoop() {
+    if (this.marketTimer) return;
+
+    // Emit initial snapshot immediately
+    this.emit('LAST_SNAPSHOT', this.buildSnapshot());
+
+    this.marketTimer = setInterval(() => {
+      this.tickMarket();
+      this.emit('MARKET_UPDATE', this.buildSnapshot());
+    }, 3500); // ~3.5s cadence feels "live" without being too noisy
+  }
+
+  private tickMarket() {
+    const now = Date.now();
+    ['BTC', 'ETH', 'SOL'].forEach((key) => {
+      const coin: any = this.market[key];
+      if (!coin) return;
+
+      // Small random walk around current price
+      const drift = (Math.random() - 0.5) * 0.006; // +/-0.3%
+      const shock = (Math.random() < 0.05 ? (Math.random() - 0.5) * 0.02 : 0); // rare larger move
+      const deltaPct = drift + shock;
+      const newPrice = Math.max(0.0001, coin.price * (1 + deltaPct));
+
+      // Update 24h change approximation (decays toward zero, then nudges by delta)
+      coin.change24h = coin.change24h * 0.9 + deltaPct * 100;
+      coin.price = newPrice;
+      coin.history = [...(coin.history || []).slice(-60), { time: now, price: newPrice }];
+    });
+  }
+
+  private buildSnapshot() {
+    return {
+      btc: { price: this.market.BTC.price, change: this.market.BTC.change24h },
+      eth: { price: this.market.ETH.price, change: this.market.ETH.change24h },
+      sol: { price: this.market.SOL.price, change: this.market.SOL.change24h },
+      timestamp: Date.now(),
+    };
   }
 
   private handleStorageChange(e: StorageEvent) {

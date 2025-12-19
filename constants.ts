@@ -25,7 +25,8 @@ export const MOCK_ADMIN: User = {
 };
 
 export const INITIAL_MARKET = {
-  BTC: { symbol: 'BTC', name: 'Bitcoin', price: 67240.50, change24h: 2.4, history: [] },
-  ETH: { symbol: 'ETH', name: 'Ethereum', price: 3450.22, change24h: -1.1, history: [] },
-  SOL: { symbol: 'SOL', name: 'Solana', price: 145.88, change24h: 5.7, history: [] },
+  // Roughly mimic late-2025 spot prices
+  BTC: { symbol: 'BTC', name: 'Bitcoin', price: 98240.5, change24h: 1.2, history: [] },
+  ETH: { symbol: 'ETH', name: 'Ethereum', price: 5123.44, change24h: 0.8, history: [] },
+  SOL: { symbol: 'SOL', name: 'Solana', price: 228.73, change24h: 3.5, history: [] },
 };
