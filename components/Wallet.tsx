@@ -187,7 +187,7 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
 
       {/* Transaction Control */}
       <div className="glass p-8 rounded-2xl h-fit">
-        <h3 className="text-sm font-bold font-mono text-white/50 mb-6 uppercase tracking-[0.2em]">P2P Transmission</h3>
+        <h3 className="text-sm font-bold font-mono text-white/50 mb-6 uppercase tracking-[0.2em]">Send Crypto</h3>
         <form onSubmit={handleSend} className="space-y-6">
           {error && <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] rounded-lg font-mono uppercase">{error}</div>}
           {success && <div className="p-3 bg-success/10 border border-success/20 text-success text-[10px] rounded-lg font-mono uppercase">{success}</div>}
@@ -242,7 +242,7 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
           </div>
 
           <button className="w-full py-4 bg-gradient-to-r from-electro-primary to-electro-secondary rounded-xl font-bold font-mono tracking-widest hover:opacity-90 transition-all shadow-glow">
-            EXECUTE TRANSMISSION
+            SEND CRYPTO
           </button>
         </form>
       </div>
