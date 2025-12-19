@@ -73,10 +73,19 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
       return;
     }
 
-    // For now, we don't mutate local balances; server simulates mempool + confirm
+    // Refresh users from storage each send to catch new users from other tabs/browsers
     const recipientTrimmed = recipient.trim();
-    const receiver = db.getUsers().find(u => u.username.toLowerCase() === recipientTrimmed.toLowerCase());
-    if (!receiver) { setError('User not found on the network.'); setRecipientInvalid(true); return; }
+    const users = db.getUsers();
+    const receiver = users.find(u => u.username.toLowerCase() === recipientTrimmed.toLowerCase());
+    if (!receiver) {
+      const suggestions = users
+        .filter(u => u.username.toLowerCase().startsWith(recipientTrimmed.toLowerCase()))
+        .slice(0, 3)
+        .map(u => u.username);
+      setError(suggestions.length ? `User not found. Did you mean: ${suggestions.join(', ')}?` : 'User not found on the network.');
+      setRecipientInvalid(true);
+      return;
+    }
     if (receiver.id === user.id) { setError('Cannot transmit to self.'); return; }
 
     // Emit to server mempool
