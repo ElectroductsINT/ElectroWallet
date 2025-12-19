@@ -91,25 +91,6 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
       return;
     }
     if (receiver.id === user.id) { setError('Cannot transmit to self.'); return; }
-    
-      // Refresh users from storage each send to catch new users from other tabs/browsers
-      const recipientTrimmed = recipient.trim();
-
-      // Validate address against selected currency format
-      if (!validateAddress(currency, recipientTrimmed)) {
-        setError(`Invalid ${currency} address format.`);
-        setRecipientInvalid(true);
-        return;
-      }
-
-      const users = db.getUsers();
-      const receiver = users.find(u => u.walletAddresses?.[currency]?.toLowerCase() === recipientTrimmed.toLowerCase());
-      if (!receiver) {
-        setError('Destination address not found on the network.');
-        setRecipientInvalid(true);
-        return;
-      }
-      if (receiver.id === user.id) { setError('Cannot transmit to self.'); return; }
 
     // Emit to server mempool
     electroSocket.submitTx({ from: user.username, to: recipientTrimmed, amount: sendAmount, currency });
