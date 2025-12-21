@@ -1,0 +1,16 @@
+/* Minimal index.css included in public so it is copied to dist root for GitHub Pages */
+:root {
+  --app-bg: #0b1021;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: var(--app-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* keep a couple of core styles that were previously inlined */
+* { box-sizing: border-box; }
