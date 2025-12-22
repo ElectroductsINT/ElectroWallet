@@ -39,7 +39,18 @@ class ElectroSocket {
   connect(username?: string) {
     if (this.socket) return this.socket;
     
-    // Try to connect to real server, but fallback to mock mode
+    // Check if we're on localhost (development) or production (GitHub Pages)
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isGitHubPages = window.location.hostname.includes('github.io');
+    
+    // Default to mock mode for production/GitHub Pages
+    if (!isLocalhost || isGitHubPages) {
+      this.mockMode = true;
+      this.startMockMarketLoop();
+      return null; // No real socket connection needed
+    }
+    
+    // Try to connect to real server in development, but fallback to mock mode
     this.socket = io('http://localhost:4000', {
       transports: ['websocket'],
       query: username ? { username } : undefined,
