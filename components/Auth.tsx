@@ -55,16 +55,18 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
     const uname = username.trim();
     const pass = password.trim();
 
-    if (uname.length < MIN_USER) { setError(`Username must be at least ${MIN_USER} chars.`); return; }
-    if (pass.length < MIN_PASS) { setError(`Password must be at least ${MIN_PASS} chars.`); return; }
-
     if (isRegistering) {
+      // Enforce minimums only when creating a new account
+      if (uname.length < MIN_USER) { setError(`Username must be at least ${MIN_USER} chars.`); return; }
+      if (pass.length < MIN_PASS) { setError(`Password must be at least ${MIN_PASS} chars.`); return; }
+
       const existing = db.getUsers().find(u => u.username.toLowerCase() === uname.toLowerCase());
       if (existing) { setError('Username already exists.'); setInlineHint('Try another alias.'); return; }
       const mnemonic = generateMnemonic();
       setGeneratedMnemonic(mnemonic);
       setStep(2);
     } else {
+      // Login flow: allow existing credentials even if they don't meet current registration rules
       const usersList = db.getUsers();
       const userByName = usersList.find(u => u.username.toLowerCase() === uname.toLowerCase());
       if (userByName) {

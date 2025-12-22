@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { INITIAL_MARKET } from '../constants';
+import { marketDataGenerator, RealtimePriceTicker } from './marketData';
 
 export type MarketSnapshot = {
   btc: { price: number; change: number };
@@ -23,10 +24,16 @@ export type MempoolTx = {
 
 class ElectroSocket {
   private socket: Socket | null = null;
-  private mockMode: boolean = true; // Enable mock mode for demo without backend
+  private mockMode: boolean = true;
   private listeners: Map<string, Set<Function>> = new Map();
   private market = JSON.parse(JSON.stringify(INITIAL_MARKET));
   private marketTimer: any = null;
+  private priceTicker: RealtimePriceTicker | null = null;
+  private initialPrices = {
+    BTC: 98240.5,
+    ETH: 5123.44,
+    SOL: 228.73
+  };
 
   connect(username?: string) {
     if (this.socket) return this.socket;
@@ -48,9 +55,10 @@ class ElectroSocket {
       this.mockMode = false;
     });
 
-    // Listen for localStorage changes from other tabs
+    // Always listen for localStorage changes for cross-tab sync
+    window.addEventListener('storage', this.handleStorageChange.bind(this));
+    
     if (this.mockMode) {
-      window.addEventListener('storage', this.handleStorageChange.bind(this));
       this.startMockMarketLoop();
     }
 
@@ -60,32 +68,32 @@ class ElectroSocket {
   private startMockMarketLoop() {
     if (this.marketTimer) return;
 
+    // Initialize realistic market data generator
+    this.priceTicker = new RealtimePriceTicker(
+      ['BTC', 'ETH', 'SOL'],
+      this.initialPrices
+    );
+
+    // Start real-time price updates every 2 seconds
+    this.priceTicker.start((symbol, price, change24h) => {
+      this.market[symbol] = {
+        ...this.market[symbol],
+        price,
+        change24h,
+        history: [
+          ...(this.market[symbol].history || []).slice(-100),
+          { time: Math.floor(Date.now() / 1000), price }
+        ]
+      };
+    }, 2000);
+
     // Emit initial snapshot immediately
     this.emit('LAST_SNAPSHOT', this.buildSnapshot());
 
+    // Emit market updates at regular intervals (matches price ticker)
     this.marketTimer = setInterval(() => {
-      this.tickMarket();
       this.emit('MARKET_UPDATE', this.buildSnapshot());
-    }, 3500); // ~3.5s cadence feels "live" without being too noisy
-  }
-
-  private tickMarket() {
-    const now = Date.now();
-    ['BTC', 'ETH', 'SOL'].forEach((key) => {
-      const coin: any = this.market[key];
-      if (!coin) return;
-
-      // Small random walk around current price
-      const drift = (Math.random() - 0.5) * 0.006; // +/-0.3%
-      const shock = (Math.random() < 0.05 ? (Math.random() - 0.5) * 0.02 : 0); // rare larger move
-      const deltaPct = drift + shock;
-      const newPrice = Math.max(0.0001, coin.price * (1 + deltaPct));
-
-      // Update 24h change approximation (decays toward zero, then nudges by delta)
-      coin.change24h = coin.change24h * 0.9 + deltaPct * 100;
-      coin.price = newPrice;
-      coin.history = [...(coin.history || []).slice(-60), { time: now, price: newPrice }];
-    });
+    }, 3500);
   }
 
   private buildSnapshot() {
@@ -99,23 +107,31 @@ class ElectroSocket {
 
   private handleStorageChange(e: StorageEvent) {
     if (e.key === 'electrowallet_sync_event') {
-      const event = JSON.parse(e.newValue || '{}');
-      const handlers = this.listeners.get(event.type);
-      if (handlers) {
-        handlers.forEach(cb => cb(event.payload));
+      try {
+        const event = JSON.parse(e.newValue || '{}');
+        if (event.type && event.payload !== undefined) {
+          const handlers = this.listeners.get(event.type);
+          if (handlers) {
+            handlers.forEach(cb => cb(event.payload));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to parse storage event:', err);
       }
     }
   }
 
   private emit(eventType: string, payload: any) {
     if (this.mockMode) {
-      // Broadcast to other tabs via localStorage
+      // Broadcast to other tabs via localStorage with unique key to trigger change detection
+      const eventId = `${eventType}_${Date.now()}_${Math.random()}`;
       localStorage.setItem('electrowallet_sync_event', JSON.stringify({
+        id: eventId,
         type: eventType,
         payload,
         timestamp: Date.now()
       }));
-      // Also trigger locally
+      // Also trigger locally immediately
       const handlers = this.listeners.get(eventType);
       if (handlers) {
         handlers.forEach(cb => cb(payload));
@@ -173,12 +189,17 @@ class ElectroSocket {
   }
 
   submitTx(payload: { from: string; to: string; amount: number; currency: string }) {
-    // In mock mode, process transaction locally
+    // Always process in mock mode first (or forward to server)
     if (this.mockMode) {
       this.processMockTransaction(payload);
     } else {
       this.socket?.emit('SUBMIT_TX', payload);
     }
+    // Broadcast to other tabs via localStorage
+    localStorage.setItem('electrowallet_tx_submitted', JSON.stringify({
+      payload,
+      timestamp: Date.now()
+    }));
   }
 
   private processMockTransaction(payload: { from: string; to: string; amount: number; currency: string }) {

@@ -100,7 +100,7 @@ const App: React.FC = () => {
   // Listen for localStorage changes from other tabs
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'electrowallet_users' || e.key === 'electrowallet_transactions') {
+      if (e.key === 'electrowallet_users' || e.key === 'electrowallet_transactions' || e.key === 'electrowallet_tx_submitted') {
         refreshData();
       }
     };
