@@ -4,6 +4,7 @@ import AdminPanel from './AdminPanel';
 import { db } from '../services/mockDb';
 import { electroSocket } from '../services/socket';
 import { useNotify } from './Notifications';
+import { formatCryptoAmount, formatPrice } from '../utils/formatters';
 
 interface AdminConsoleProps {
   admin: User;
@@ -202,7 +203,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ admin, onLogout }) => {
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <h3 className="text-white/50 text-xs font-mono uppercase mb-1">{coin.name}</h3>
-                        <p className="text-2xl font-bold font-mono">${coin.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                        <p className="text-2xl font-bold font-mono">${formatPrice(coin.price)}</p>
                       </div>
                       <span className={`text-xs font-mono px-3 py-1 rounded-full ${
                         coin.change24h >= 0 ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'
@@ -236,7 +237,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ admin, onLogout }) => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold font-mono">{tx.amount === 0 ? '0' : tx.amount.toFixed(tx.amount < 0.01 ? 6 : 4)} {tx.currency}</p>
+                      <p className="text-sm font-bold font-mono">{formatCryptoAmount(tx.amount)} {tx.currency}</p>
                       <p className="text-xs text-white/40 font-mono">${Math.round(tx.amount * (market[tx.currency]?.price || 0)).toLocaleString()}</p>
                     </div>
                   </div>

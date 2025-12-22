@@ -1,6 +1,6 @@
 
 import { User, Transaction, MarketData, SubscriptionTier } from '../types';
-import { MOCK_ADMIN, INITIAL_MARKET } from '../constants';
+import { MOCK_ADMIN, MOCK_TEST_USER, INITIAL_MARKET } from '../constants';
 import { generateUniqueAddresses } from './address';
 
 const BOT_NAMES = [

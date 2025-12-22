@@ -4,6 +4,7 @@ import { MarketData, Transaction, User } from '../types';
 import MarketChart from './MarketChart';
 import NewsTicker from './NewsTicker';
 import { electroSocket, MempoolTx } from '../services/socket';
+import { formatCryptoAmount, formatPrice } from '../utils/formatters';
 
 interface DashboardProps {
   market: Record<string, MarketData>;
@@ -57,7 +58,7 @@ const Dashboard: React.FC<DashboardProps> = ({ market, transactions, user }) => 
               <div className="flex justify-between items-start mb-4 lg:mb-5">
                 <div className="flex-1">
                   <h3 className="text-white/50 text-[9px] lg:text-xs font-mono uppercase tracking-wider group-hover:text-cyan-400 transition-colors">{coin.name}</h3>
-                  <p className="text-lg lg:text-2xl font-bold font-mono tracking-tighter text-white group-hover:text-cyan-300 transition-colors drop-shadow-[0_0_10px_rgba(94,231,223,0.2)]">${coin.price.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                  <p className="text-lg lg:text-2xl font-bold font-mono tracking-tighter text-white group-hover:text-cyan-300 transition-colors drop-shadow-[0_0_10px_rgba(94,231,223,0.2)]">${formatPrice(coin.price)}</p>
                 </div>
                 <span className={`text-[9px] lg:text-xs font-mono px-3 lg:px-4 py-1.5 rounded-full transition-all transform group-hover:scale-110 whitespace-nowrap font-semibold ${coin.change24h >= 0 ? 'bg-emerald-500/15 text-emerald-400 group-hover:bg-emerald-500/25 group-hover:shadow-lg group-hover:shadow-emerald-500/20' : 'bg-rose-500/15 text-rose-400 group-hover:bg-rose-500/25 group-hover:shadow-lg group-hover:shadow-rose-500/20'}`}>
                   {coin.change24h >= 0 ? '↑ +' : '↓ '}{Math.abs(coin.change24h).toFixed(1)}%
@@ -142,7 +143,7 @@ const Dashboard: React.FC<DashboardProps> = ({ market, transactions, user }) => 
                   <p className="text-[9px] lg:text-xs font-mono text-white/80">
                     <span className="text-cyan-400 font-semibold">@{tx.senderUsername}</span>
                     <span className="text-white/40"> → </span>
-                    <span className="text-white">{tx.amount} {tx.currency}</span>
+                    <span className="text-white">{formatCryptoAmount(tx.amount)} {tx.currency}</span>
                   </p>
                   <p className="text-[8px] lg:text-[9px] text-amber-400 font-mono font-bold uppercase mt-1">⧗ Pending</p>
                 </div>
@@ -162,7 +163,7 @@ const Dashboard: React.FC<DashboardProps> = ({ market, transactions, user }) => 
                   <span className="text-purple-400 font-semibold">@{tx.receiverUsername}</span>
                 </p>
                 <div className="flex justify-between mt-1">
-                  <span className="text-[8px] text-white/50 font-mono">{tx.amount} {tx.currency}</span>
+                  <span className="text-[8px] text-white/50 font-mono">{formatCryptoAmount(tx.amount)} {tx.currency}</span>
                   <span className="text-[8px] text-emerald-400 font-mono uppercase font-semibold">✓ Confirmed</span>
                 </div>
               </div>

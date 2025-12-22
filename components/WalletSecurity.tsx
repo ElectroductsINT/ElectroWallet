@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import { security } from '../services/security';
 import { useNotify } from './Notifications';
+import { formatCryptoAmount } from '../utils/formatters';
 
 interface TransactionConfirmDialogProps {
   isOpen: boolean;
@@ -43,7 +44,7 @@ const TransactionConfirmDialog: React.FC<TransactionConfirmDialogProps> = ({
         <div className="space-y-4 mb-8 p-6 bg-black/40 rounded-xl border border-white/5">
           <div className="flex justify-between items-center">
             <span className="text-white/50 text-sm">Amount</span>
-            <span className="text-white font-bold font-mono">{amount} {currency}</span>
+            <span className="text-white font-bold font-mono">{formatCryptoAmount(amount)} {currency}</span>
           </div>
           <div className="border-t border-white/10 pt-4 flex justify-between items-center">
             <span className="text-white/50 text-sm">To Address</span>
@@ -162,7 +163,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsProps> = ({
         <div className="space-y-4 mb-8">
           <div className="p-4 bg-black/40 rounded-xl border border-white/5">
             <p className="text-[10px] text-white/40 font-mono uppercase mb-1">Amount</p>
-            <p className="text-2xl font-bold font-mono text-white">{transaction.amount} {transaction.currency}</p>
+            <p className="text-2xl font-bold font-mono text-white">{formatCryptoAmount(transaction.amount)} {transaction.currency}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

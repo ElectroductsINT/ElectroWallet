@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, LineStyle, AreaSeriesPartialOptions, CandlestickSeriesPartialOptions } from 'lightweight-charts';
 import { marketDataGenerator, CandleData } from '../services/marketData';
+import { formatPrice } from '../utils/formatters';
 
 interface MarketChartProps {
   data: { time: number; price: number }[];
@@ -170,7 +171,7 @@ const MarketChart: React.FC<MarketChartProps> = ({ data, symbol = 'BTC', chartTy
           <div className="ml-auto text-right">
             <p className="text-[10px] font-mono text-white/50 uppercase tracking-widest">Live Price</p>
             <p className="text-2xl md:text-3xl font-bold font-mono text-white drop-shadow-[0_0_20px_rgba(94,231,223,0.4)]">
-              ${latest.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              ${formatPrice(latest.price)}
             </p>
             <p className={`text-[10px] font-mono font-semibold ${change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
               {change >= 0 ? '↑ +' : '↓ '}{Math.abs(change).toFixed(1)}% (1h) · Real-time
