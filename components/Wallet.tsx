@@ -306,7 +306,7 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] font-mono text-white/40 uppercase">Amount</p>
-                        <p className="font-mono text-sm text-white">{tx.amount.toFixed(8)} {tx.currency}</p>
+                        <p className="font-mono text-sm text-white">{tx.amount === 0 ? '0' : tx.amount.toFixed(tx.amount < 0.0001 ? 8 : tx.amount < 0.01 ? 6 : 4)} {tx.currency}</p>
                       </div>
                     </div>
                     <div className="mt-3">
@@ -462,14 +462,19 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
   );
 };
 
-const BalanceCard: React.FC<{ symbol: string; amount: number; price: number }> = ({ symbol, amount, price }) => (
-  <div className="bg-black/40 p-3 rounded-xl border border-white/5 flex-1 min-w-[120px]">
-    <div className="flex justify-between items-center mb-1">
-      <span className="text-[10px] font-bold text-white/40">{symbol}</span>
-      <span className="text-[9px] text-electro-accent font-mono">${(amount * price).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+const BalanceCard: React.FC<{ symbol: string; amount: number; price: number }> = ({ symbol, amount, price }) => {
+  // For zero balances, show just "0" to avoid excessive zeros
+  const displayAmount = amount === 0 ? '0' : amount.toFixed(amount < 0.01 ? 6 : 4);
+
+  return (
+    <div className="bg-black/40 p-3 rounded-xl border border-white/5 flex-1 min-w-[120px]">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-[10px] font-bold text-white/40">{symbol}</span>
+        <span className="text-[9px] text-electro-accent font-mono">${(amount * price).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+      </div>
+      <p className="text-sm font-bold font-mono text-white">{displayAmount}</p>
     </div>
-    <p className="text-sm font-bold font-mono text-white">{amount.toFixed(4)}</p>
-  </div>
-);
+  );
+};
 
 export default Wallet;

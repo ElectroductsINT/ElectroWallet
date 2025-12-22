@@ -236,7 +236,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({ admin, onLogout }) => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold font-mono">{tx.amount.toFixed(4)} {tx.currency}</p>
+                      <p className="text-sm font-bold font-mono">{tx.amount === 0 ? '0' : tx.amount.toFixed(tx.amount < 0.01 ? 6 : 4)} {tx.currency}</p>
                       <p className="text-xs text-white/40 font-mono">${(tx.amount * (market[tx.currency]?.price || 0)).toFixed(2)}</p>
                     </div>
                   </div>
