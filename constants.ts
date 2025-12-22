@@ -21,7 +21,7 @@ export const MOCK_ADMIN: User = {
     ETH: '0xAdmin000000000000000000000000000000000001',
     SOL: 'AdminAdminAdminAdminAdminAdminAdminAdminAdminA'
   },
-  balance: { BTC: 100, ETH: 500, SOL: 10000 },
+  balance: { BTC: 5, ETH: 50, SOL: 500 },
 };
 
 // A simple demo/test user for quick sign-in during demos
@@ -38,12 +38,12 @@ export const MOCK_TEST_USER: User = {
     ETH: '0xTestUser0000000000000000000000000000000000',
     SOL: 'TestTestTestTestTestTestTestTestTestTes'
   },
-  balance: { BTC: 0.01, ETH: 1.0, SOL: 10 },
+  balance: { BTC: 0.05, ETH: 0.5, SOL: 25 },
 };
 
 export const INITIAL_MARKET = {
   // Roughly mimic late-2025 spot prices
-  BTC: { symbol: 'BTC', name: 'Bitcoin', price: 98240.5, change24h: 1.2, history: [] },
-  ETH: { symbol: 'ETH', name: 'Ethereum', price: 5123.44, change24h: 0.8, history: [] },
-  SOL: { symbol: 'SOL', name: 'Solana', price: 228.73, change24h: 3.5, history: [] },
+  BTC: { symbol: 'BTC', name: 'Bitcoin', price: 88744.00, change24h: 1.2, history: [] },
+  ETH: { symbol: 'ETH', name: 'Ethereum', price: 3000.00, change24h: 0.8, history: [] },
+  SOL: { symbol: 'SOL', name: 'Solana', price: 125.00, change24h: 3.5, history: [] },
 };

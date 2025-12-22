@@ -103,7 +103,7 @@ const BankingBridge: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               <div className="flex gap-2">
                 <input
                   type="number"
-                  step="0.0001"
+                  step={currency === 'BTC' ? '0.00000001' : currency === 'ETH' ? '0.000001' : '0.0001'}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
