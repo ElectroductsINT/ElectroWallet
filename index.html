@@ -74,10 +74,25 @@
         backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.12);
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        transform-style: preserve-3d;
       }
       .glass:hover {
         border-color: rgba(255, 255, 255, 0.2);
         box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+        transform: translateY(-2px);
+      }
+      /* 3D Perspective utilities */
+      .perspective-1000 {
+        perspective: 1000px;
+      }
+      .perspective-1200 {
+        perspective: 1200px;
+      }
+      .preserve-3d {
+        transform-style: preserve-3d;
+      }
+      .backface-hidden {
+        backface-visibility: hidden;
       }
       @keyframes slideIn {
         from {
@@ -130,24 +145,32 @@
         animation: shimmer 1.4s ease-in-out infinite;
       }
       * {
-        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
       }
       button, a, input, select {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
       button:active {
         transform: scale(0.98);
       }
       input:focus, select:focus, textarea:focus {
         outline: none;
-        border-color: #818cf8;
-        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+        border-color: #7c96f8;
+        box-shadow: 0 0 0 3px rgba(124, 150, 248, 0.1);
       }
       button:hover {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
       }
       button:active {
         transform: translateY(0) scale(0.98);
+      }
+      /* 3D Card hover effects */
+      .card-3d {
+        transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .card-3d:hover {
+        transform: translateY(-4px) rotateX(2deg);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 15px 40px rgba(0, 0, 0, 0.4);
       }
     </style>
   <script type="importmap">
