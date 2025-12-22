@@ -21,7 +21,11 @@ const Dashboard: React.FC<DashboardProps> = ({ market, transactions, user }) => 
     electroSocket.onMempoolUpdate((txs) => setMempool(txs));
   }, [user.username]);
 
-  const totalValue = user.balance.BTC * market.BTC.price + user.balance.ETH * market.ETH.price + user.balance.SOL * market.SOL.price;
+  const btcPrice = market.BTC?.price || 0;
+  const ethPrice = market.ETH?.price || 0;
+  const solPrice = market.SOL?.price || 0;
+  
+  const totalValue = (user.balance.BTC * btcPrice) + (user.balance.ETH * ethPrice) + (user.balance.SOL * solPrice);
   const userTxs = transactions.filter(tx => tx.senderUsername === user.username || tx.receiverUsername === user.username);
 
   return (
@@ -33,7 +37,7 @@ const Dashboard: React.FC<DashboardProps> = ({ market, transactions, user }) => 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
             <div className="group/stat cursor-pointer p-4 rounded-xl hover:bg-white/5 transition-all">
               <p className="text-white/50 text-[9px] lg:text-[10px] font-mono uppercase tracking-widest mb-2 group-hover/stat:text-cyan-400 transition-colors">Portfolio Value</p>
-              <p className="text-xl lg:text-2xl font-bold font-mono tracking-tighter text-white group-hover/stat:text-cyan-300 group-hover/stat:scale-105 transition-all drop-shadow-[0_0_15px_rgba(94,231,223,0.3)]">${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              <p className="text-xl lg:text-2xl font-bold font-mono tracking-tighter text-white group-hover/stat:text-cyan-300 group-hover/stat:scale-105 transition-all drop-shadow-[0_0_15px_rgba(94,231,223,0.3)]">${totalValue === 0 ? '0' : totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <div className="group/stat cursor-pointer p-4 rounded-xl hover:bg-white/5 transition-all">
               <p className="text-white/50 text-[9px] lg:text-[10px] font-mono uppercase tracking-widest mb-2 group-hover/stat:text-emerald-400 transition-colors">Transactions</p>

@@ -158,9 +158,13 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
     return tx.senderUsername === user.username || tx.receiverUsername === user.username;
   });
 
-  const totalValueUSD = (user.balance.BTC * market.BTC.price) + 
-                       (user.balance.ETH * market.ETH.price) + 
-                       (user.balance.SOL * market.SOL.price);
+  const btcPrice = market.BTC?.price || 0;
+  const ethPrice = market.ETH?.price || 0;
+  const solPrice = market.SOL?.price || 0;
+  
+  const totalValueUSD = (user.balance.BTC * btcPrice) + 
+                       (user.balance.ETH * ethPrice) + 
+                       (user.balance.SOL * solPrice);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -170,7 +174,7 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
           <p className="text-white/40 text-xs font-mono uppercase tracking-[0.2em] mb-1">Estimated Net Worth</p>
           <div className="flex items-baseline gap-2">
             <h2 className="text-4xl font-bold font-mono tracking-tighter text-white">
-              ${totalValueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              ${totalValueUSD === 0 ? '0' : totalValueUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </h2>
             <span className="text-electro-accent font-mono text-xs">USD</span>
           </div>
@@ -465,12 +469,14 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
 const BalanceCard: React.FC<{ symbol: string; amount: number; price: number }> = ({ symbol, amount, price }) => {
   // For zero balances, show just "0" to avoid excessive zeros
   const displayAmount = amount === 0 ? '0' : amount.toFixed(amount < 0.01 ? 6 : 4);
+  const usdValue = amount * price;
+  const displayUSD = usdValue === 0 ? '$0' : `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
   return (
     <div className="bg-black/40 p-3 rounded-xl border border-white/5 flex-1 min-w-[120px]">
       <div className="flex justify-between items-center mb-1">
         <span className="text-[10px] font-bold text-white/40">{symbol}</span>
-        <span className="text-[9px] text-electro-accent font-mono">${(amount * price).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+        <span className="text-[9px] text-electro-accent font-mono">{displayUSD}</span>
       </div>
       <p className="text-sm font-bold font-mono text-white">{displayAmount}</p>
     </div>
