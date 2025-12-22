@@ -42,7 +42,7 @@ export const MOCK_TEST_USER: User = {
 };
 
 export const INITIAL_MARKET = {
-  // Roughly mimic late-2025 spot prices
+  // December 2025 spot prices
   BTC: { symbol: 'BTC', name: 'Bitcoin', price: 88744.00, change24h: 1.2, history: [] },
   ETH: { symbol: 'ETH', name: 'Ethereum', price: 3000.00, change24h: 0.8, history: [] },
   SOL: { symbol: 'SOL', name: 'Solana', price: 125.00, change24h: 3.5, history: [] },

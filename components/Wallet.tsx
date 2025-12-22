@@ -1,4 +1,17 @@
 
+/**
+ * Wallet Component
+ * 
+ * Displays user cryptocurrency balances, provides functionality for sending crypto
+ * to other users, and shows wallet addresses for receiving funds.
+ * 
+ * Features:
+ * - Balance cards with proper decimal precision (BTC: 8, ETH: 6, SOL: 4)
+ * - USD value conversion with 2 decimal places
+ * - Transaction form with dynamic step values per currency
+ * - Wallet address display for receiving funds
+ */
+
 import React, { useState } from 'react';
 import { User, MarketData } from '../types';
 import { db } from '../services/mockDb';
@@ -115,7 +128,7 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
               />
               <select
                 value={sendCurrency}
-                onChange={(e) => setSendCurrency(e.target.value as any)}
+                onChange={(e) => setSendCurrency(e.target.value as 'BTC' | 'ETH' | 'SOL')}
                 className="bg-black/40 border border-white/10 rounded-xl px-4 text-white font-mono focus:outline-none focus:border-electro-accent"
               >
                 <option value="BTC">BTC</option>
