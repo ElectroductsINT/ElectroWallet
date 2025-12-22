@@ -51,25 +51,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  verify:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Verify Pages site is up
-        continue-on-error: true
-        run: |
-          BASE="https://electroductsint.github.io/ElectroWallet"
-          echo "Waiting for Pages to propagate..."
-          sleep 30
-          echo "Checking $BASE/"
-          for i in {1..5}; do
-            if curl -fsSL "$BASE/" -o /dev/null 2>&1; then
-              echo "✓ Site is up!"
-              exit 0
-            fi
-            echo "Attempt $i/5 - retrying in 10s..."
-            sleep 10
-          done
-          echo "⚠ Verification timed out, but deployment may still succeed"
-          exit 0
