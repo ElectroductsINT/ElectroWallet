@@ -165,6 +165,7 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
   const totalValueUSD = (user.balance.BTC * btcPrice) + 
                        (user.balance.ETH * ethPrice) + 
                        (user.balance.SOL * solPrice);
+  const isZeroBalance = Math.abs(user.balance.BTC) < 0.00000001 && Math.abs(user.balance.ETH) < 0.00000001 && Math.abs(user.balance.SOL) < 0.00000001;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -174,7 +175,7 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
           <p className="text-white/40 text-xs font-mono uppercase tracking-[0.2em] mb-1">Estimated Net Worth</p>
           <div className="flex items-baseline gap-2">
             <h2 className="text-4xl font-bold font-mono tracking-tighter text-white">
-              ${totalValueUSD === 0 ? '0' : totalValueUSD.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              ${isZeroBalance ? '0' : Math.round(totalValueUSD).toLocaleString()}
             </h2>
             <span className="text-electro-accent font-mono text-xs">USD</span>
           </div>
@@ -467,10 +468,11 @@ const Wallet: React.FC<WalletProps> = ({ user, market, onTransaction }) => {
 };
 
 const BalanceCard: React.FC<{ symbol: string; amount: number; price: number }> = ({ symbol, amount, price }) => {
-  // For zero balances, show just "0" to avoid excessive zeros
-  const displayAmount = amount === 0 ? '0' : amount.toFixed(amount < 0.01 ? 6 : 4);
+  // Treat very small amounts as zero to prevent display issues
+  const isZero = Math.abs(amount) < 0.00000001;
+  const displayAmount = isZero ? '0' : amount.toFixed(amount < 0.01 ? 6 : 4);
   const usdValue = amount * price;
-  const displayUSD = usdValue === 0 ? '$0' : `$${Math.round(usdValue).toLocaleString()}`;
+  const displayUSD = isZero ? '$0' : `$${Math.round(usdValue).toLocaleString()}`;
 
   return (
     <div className="bg-black/40 p-3 rounded-xl border border-white/5 flex-1 min-w-[120px]">

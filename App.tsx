@@ -51,27 +51,32 @@ const App: React.FC = () => {
   // Live Market via Socket.io (Server Source of Truth)
   useEffect(() => {
     const socket = electroSocket.connect(currentUser?.username);
+    let updateTimeout: NodeJS.Timeout;
 
     const applySnapshot = (snap: any) => {
-      setMarket(prev => {
-        const updated = { ...prev };
-        const now = Date.now();
-        // Map server snapshot (btc/eth/sol) to our uppercase keys and schema
-        const mapEntry = (key: 'BTC'|'ETH'|'SOL', src: { price: number; change: number }) => {
-          const coin = updated[key];
-          if (!coin) return;
-          updated[key] = {
-            ...coin,
-            price: src.price,
-            change24h: src.change,
-            history: [...coin.history.slice(-20), { time: now, price: src.price }]
+      // Debounce market updates to prevent excessive re-renders
+      clearTimeout(updateTimeout);
+      updateTimeout = setTimeout(() => {
+        setMarket(prev => {
+          const updated = { ...prev };
+          const now = Date.now();
+          // Map server snapshot (btc/eth/sol) to our uppercase keys and schema
+          const mapEntry = (key: 'BTC'|'ETH'|'SOL', src: { price: number; change: number }) => {
+            const coin = updated[key];
+            if (!coin) return;
+            updated[key] = {
+              ...coin,
+              price: src.price,
+              change24h: src.change,
+              history: [...coin.history.slice(-20), { time: now, price: src.price }]
+            };
           };
-        };
-        mapEntry('BTC', snap.btc);
-        mapEntry('ETH', snap.eth);
-        mapEntry('SOL', snap.sol);
-        return updated;
-      });
+          mapEntry('BTC', snap.btc);
+          mapEntry('ETH', snap.eth);
+          mapEntry('SOL', snap.sol);
+          return updated;
+        });
+      }, 100); // Update every 100ms instead of every market tick
     };
 
     electroSocket.onMarketSnapshot(applySnapshot);
@@ -83,6 +88,7 @@ const App: React.FC = () => {
     });
 
     return () => {
+      clearTimeout(updateTimeout);
       // Handlers are lightweight; socket.io cleans up on disconnect
     };
   }, [currentUser]);
